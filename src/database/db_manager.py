@@ -275,6 +275,14 @@ class DatabaseManager:
                     model_name=model_name,
                     date=today
                 )
+                # Explicitly initialize integer fields to 0
+                # SQLAlchemy Column(default=0) doesn't apply to Python objects immediately
+                usage.total_calls = 0
+                usage.successful_calls = 0
+                usage.failed_calls = 0
+                usage.rate_limited_calls = 0
+                usage.total_input_tokens = 0
+                usage.total_output_tokens = 0
                 session.add(usage)
 
             # Update metrics
