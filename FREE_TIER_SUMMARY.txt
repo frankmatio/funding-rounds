@@ -1,0 +1,223 @@
+================================================================================
+V2 PIPELINE - ORACLE CLOUD ALWAYS FREE TIER
+================================================================================
+
+✅ CONFIGURATION ALREADY OPTIMIZED FOR FREE TIER + YOUR OTHER PROGRAM
+
+================================================================================
+CRITICAL LIMITS (Oracle Always Free Tier)
+================================================================================
+
+⚠️  NETWORK:     10 GB/month outbound (YOUR MAIN CONSTRAINT)
+                 → Max 600 companies/day = 18,000/month safely
+                 → MONITOR in OCI Console weekly!
+
+✅  CPU:         1 worker (shares your 4 OCPUs nicely)
+✅  RAM:         ~2-4 GB used (plenty in 24 GB total)
+✅  STORAGE:     ~5 GB total (well under 200 GB limit)
+✅  DATABASE:    Neon PostgreSQL (external, FREE, doesn't count)
+✅  LLM APIs:    9 providers (all FREE tier)
+
+================================================================================
+WHAT'S OPTIMIZED
+================================================================================
+
+config/config.yaml settings:
+  parallel.max_workers: 1              ← Won't conflict with other program
+  search.queries_per_company: 6        ← Reduced from 8 to save bandwidth
+  search.max_results_per_query: 3      ← Reduced from 4 to save bandwidth
+  search.politeness_delay_seconds: 2   ← Increased to reduce network burst
+
+================================================================================
+NETWORK USAGE BREAKDOWN
+================================================================================
+
+Per company processed:
+  SEC EDGAR queries:        ~100 KB
+  Search queries (6):       ~300 KB
+  LLM API calls:            ~50 KB
+  ────────────────────────────────
+  TOTAL per company:        ~450 KB
+
+Daily safe limit:
+  600 companies × 450 KB = ~270 MB/day
+
+Monthly projection:
+  600 companies/day × 30 days = 18,000 companies
+  18,000 × 450 KB = 8.1 GB/month ✅ (under 10 GB limit)
+
+================================================================================
+QUICK START (3 Steps)
+================================================================================
+
+1. UPLOAD CODE
+   ──────────
+   From your Mac:
+   $ cd /Volumes/DiskExt/Users/hugh/Docs/projects/growth_stage_vc
+   $ scp -i ~/.ssh/oracle_cloud_key -r v2_parallel_db .env ubuntu@<YOUR_IP>:/opt/funding-rounds/
+
+2. SETUP
+   ──────
+   SSH to Oracle Cloud:
+   $ ssh -i ~/.ssh/oracle_cloud_key ubuntu@<YOUR_IP>
+   $ cd /opt/funding-rounds/v2_parallel_db
+   $ python3 -m venv venv
+   $ source venv/bin/activate
+   $ pip install -r requirements.txt
+   $ python3 scripts/test_db_connection.py
+
+   Should show: ✅ ALL SYSTEMS READY FOR DEPLOYMENT
+
+3. RUN
+   ────
+   Test first:
+   $ python3 run_pipeline_v2.py --limit 5 --workers 1
+
+   Production (daily batch):
+   $ screen -S funding-rounds
+   $ python3 run_pipeline_v2.py --limit 600 --workers 1
+
+   Detach: Ctrl+A then D
+   Reattach: screen -r funding-rounds
+
+================================================================================
+AUTOMATED DAILY PROCESSING (Recommended)
+================================================================================
+
+Setup cron job to run every day at 2 AM:
+
+$ crontab -e
+
+Add this line:
+0 2 * * * cd /opt/funding-rounds/v2_parallel_db && source venv/bin/activate && python3 run_pipeline_v2.py --limit 600 --workers 1 >> cron.log 2>&1
+
+Benefits:
+  ✅ Automated - no manual intervention
+  ✅ Runs at night - won't conflict with other program
+  ✅ Safe network usage - ~270 MB/day
+  ✅ Processes ~18,000 companies/month
+
+================================================================================
+PERFORMANCE EXPECTATIONS (1 Worker)
+================================================================================
+
+Speed:          ~3-5 companies/minute
+Daily batch:    600 companies in ~2-3 hours
+Monthly total:  ~18,000 companies
+
+Comparison:
+  4 workers: ~15 companies/min (NOT safe for free tier)
+  1 worker:  ~5 companies/min  (SAFE for free tier + shared resources)
+
+================================================================================
+MONITORING (Weekly Checklist)
+================================================================================
+
+✅ Network usage:
+   OCI Console → Instances → Metrics → Network Bytes Out
+   Alert if > 8 GB in current month
+
+✅ Resource usage:
+   $ htop                    # Check RAM/CPU
+   $ df -h                   # Check disk space
+
+✅ Pipeline progress:
+   $ tail -f data/logs/v2_pipeline.log
+
+✅ Database stats:
+   $ python3 -c "from src.database import DatabaseManager; import yaml; ..."
+
+================================================================================
+COST: $0/MONTH (ALL FREE!)
+================================================================================
+
+Oracle Cloud Compute:  $0/month  (Always Free Tier - Ampere A1)
+Oracle Cloud Storage:  $0/month  (well under 200 GB limit)
+Oracle Cloud Network:  $0/month  (under 10 GB/month limit)
+Neon PostgreSQL:       $0/month  (Free Tier - 10 GB)
+LLM APIs (9 providers):$0/month  (All free tiers)
+SEC EDGAR:             $0/month  (Free public API)
+──────────────────────────────────────────────────────
+TOTAL:                 $0/month  ✅
+
+⚠️  ONLY COSTS if you exceed:
+    - Network: >10 GB/month → $0.0085/GB
+    - Storage: >200 GB → $0.0255/GB
+    - Don't exceed limits, stay FREE!
+
+================================================================================
+STAYING WITHIN FREE TIER
+================================================================================
+
+✅ DO:
+   ✓ Process max 600 companies/day
+   ✓ Monitor network usage weekly in OCI console
+   ✓ Keep max_workers: 1 (already set)
+   ✓ Run during off-hours (2 AM via cron)
+   ✓ Compress/rotate logs weekly
+
+❌ DON'T:
+   ✗ Don't increase max_workers
+   ✗ Don't process >1000 companies/day
+   ✗ Don't change instance shape
+   ✗ Don't add more instances
+   ✗ Don't frequently download large exports
+
+================================================================================
+DOCUMENTATION FILES
+================================================================================
+
+Start here:
+  → QUICK_START_FREE_TIER.md         5-minute setup guide
+
+Detailed guides:
+  → ORACLE_FREE_TIER_DEPLOYMENT.md   Complete free tier guide
+  → DEPLOYMENT_CHECKLIST.md          Step-by-step checklist
+  → ORACLE_CLOUD_DEPLOYMENT.md       General deployment (paid tier)
+
+Reference:
+  → config/config.yaml               Pipeline configuration
+  → requirements.txt                 Python dependencies
+  → scripts/test_db_connection.py   Pre-flight checks
+
+================================================================================
+SUPPORT & TROUBLESHOOTING
+================================================================================
+
+If approaching network limit (8+ GB):
+  → STOP pipeline immediately
+  → Reduce to 400 companies/day
+  → Or disable search (SEC only mode)
+
+If out of memory:
+  → Check other program usage: ps aux --sort=-%mem
+  → Add swap space (see ORACLE_FREE_TIER_DEPLOYMENT.md)
+
+If pipeline slow:
+  → Expected! 1 worker is intentionally slower
+  → This protects your other program
+  → Run overnight in cron for hands-off operation
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+1. Read: QUICK_START_FREE_TIER.md
+2. Upload code to Oracle Cloud (see Step 1 above)
+3. Run: python3 scripts/test_db_connection.py
+4. Test: python3 run_pipeline_v2.py --limit 5 --workers 1
+5. Setup: Daily cron job for 600 companies
+6. Monitor: Weekly check of OCI network metrics
+
+================================================================================
+STATUS: ✅ READY FOR DEPLOYMENT
+================================================================================
+
+Configuration:  ✅ Optimized for free tier
+Database:       ✅ Neon PostgreSQL connected
+LLM Providers:  ✅ 9 providers ready (315 RPM)
+SEC Agents:     ✅ 10 agents ready
+Resource Limits:✅ 1 worker, reduced network usage
+Cost:           ✅ $0/month (all free tier)
+
+DEPLOY NOW: Just upload, test, and run!

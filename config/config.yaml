@@ -1,0 +1,125 @@
+# V2 Parallel Database Pipeline Configuration
+
+# Database Configuration
+database:
+  type: postgresql  # Options: sqlite, postgresql
+  auto_fallback: true  # Automatically fall back to SQLite if PostgreSQL fails
+  sqlite:
+    path: data/funding_rounds.db
+  postgresql:  # Neon PostgreSQL - main database for production
+    # Option 1: Use raw connection string (supports Neon, SSL, etc.)
+    connection_string: ${DATABASE_URL}  # From environment
+    # Option 2: Build from individual fields (comment out connection_string above)
+    # host: localhost
+    # port: 5432
+    # database: funding_rounds
+    # user: postgres
+    # password: ${DB_PASSWORD}
+
+# SEC EDGAR Configuration - Multiple User Agents for Rotation
+sec_user_agents:
+  - name: "Account 1"
+    user_agent: "Joe B joe.malambo@mail.com"
+  - name: "Account 2"
+    user_agent: "John Doe john.doe@example.com"
+  - name: "Account 3"
+    user_agent: "Jane Smith jane.smith@example.com"
+  # Add more accounts to avoid rate limits
+
+# LLM Provider Configuration (from .env)
+llm_providers:
+  rotation_strategy: "round_robin"  # Options: round_robin, priority, load_balanced
+  max_retries: 3
+  timeout_seconds: 30
+
+  providers:
+    - name: gemini
+      priority: 1
+      rate_limit_rpm: 15
+      enabled: true
+    - name: groq
+      priority: 2
+      rate_limit_rpm: 30
+      enabled: true
+    - name: deepseek
+      priority: 3
+      rate_limit_rpm: 60
+      enabled: true
+    - name: openrouter
+      priority: 4
+      rate_limit_rpm: 20
+      enabled: true
+    - name: cerebras
+      priority: 5
+      rate_limit_rpm: 30
+      enabled: true
+    - name: mistral
+      priority: 6
+      rate_limit_rpm: 30
+      enabled: true
+    - name: fireworks
+      priority: 7
+      rate_limit_rpm: 30
+      enabled: true
+    - name: qwen
+      priority: 8
+      rate_limit_rpm: 60
+      enabled: true
+    - name: openrouter_2
+      priority: 9
+      rate_limit_rpm: 20
+      enabled: true
+
+# Parallel Processing Configuration
+parallel:
+  max_workers: 2  # ORACLE FREE TIER: 2 workers for monthly run (monitor resources!)
+  batch_size: 100  # Commit to DB every N companies
+  checkpoint_interval: 50  # Save progress every N companies
+
+# Search Configuration
+search:
+  max_results_per_query: 3  # ORACLE FREE TIER: Reduced to save bandwidth
+  queries_per_company: 6  # ORACLE FREE TIER: Reduced from 8 to save bandwidth
+  politeness_delay_seconds: 2  # ORACLE FREE TIER: Increased to reduce network load
+
+  authoritative_sources:
+    - techcrunch.com
+    - crunchbase.com
+    - reuters.com
+    - bloomberg.com
+    - pitchbook.com
+    - cbinsights.com
+    - theinformation.com
+    - axios.com
+    - venturebeat.com
+    - geekwire.com
+    - wsj.com
+    - ft.com
+    - forbes.com
+    - eu-startups.com      # European startup funding news
+    - sifted.eu            # FT-backed European startup/VC publication
+    - finsmes.com          # Global funding announcements
+
+# Deduplication Configuration
+deduplication:
+  date_proximity_days: 90
+  amount_similarity_threshold: 0.10  # 10%
+  enable_fuzzy_matching: true
+
+# Logging Configuration
+logging:
+  level: INFO
+  format: "%(asctime)s.%(msecs)03d | %(levelname)-8s | %(name)s | %(message)s"
+  date_format: "%Y-%m-%d %H:%M:%S"
+  file: data/logs/v2_pipeline.log
+  max_file_size_mb: 100
+  backup_count: 5
+
+# Export Configuration
+export:
+  formats:
+    - excel
+    - csv
+    - json
+  output_directory: data/exports
+  filename_template: "funding_rounds_{timestamp}"
