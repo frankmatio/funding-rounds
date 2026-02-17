@@ -54,12 +54,7 @@ fi
 PYTHON_VERSION=$(python3 --version)
 echo -e "${GREEN}✓${NC} $PYTHON_VERSION"
 
-# Install PostgreSQL dev libs for psycopg2
-if ! python3 -c "import psycopg2" 2>/dev/null; then
-    echo "Installing PostgreSQL libraries..."
-    $PKG install -y python3-devel postgresql-devel gcc 2>/dev/null || \
-    $PKG install -y python3-dev libpq-dev 2>/dev/null || true
-fi
+# No system PostgreSQL libs needed - psycopg2-binary includes everything
 
 # Install screen
 if ! command -v screen &> /dev/null; then
@@ -162,10 +157,11 @@ pip install --quiet \
     openpyxl==3.1.2 \
     tenacity==8.2.3
 
-# Try psycopg2-binary first (no system libs needed)
-pip install psycopg2-binary --quiet 2>/dev/null || \
-pip install psycopg2 --quiet 2>/dev/null || \
-echo -e "${YELLOW}⚠${NC}  psycopg2 install failed - will use SQLite fallback"
+# psycopg2-binary is self-contained, no system libs needed
+echo "Installing psycopg2-binary (bundled PostgreSQL driver)..."
+pip install psycopg2-binary --quiet && \
+echo -e "${GREEN}✓${NC} psycopg2-binary installed" || \
+echo -e "${YELLOW}⚠${NC}  psycopg2-binary failed - pipeline will use SQLite fallback"
 
 echo -e "${GREEN}✓${NC} Python packages installed"
 
