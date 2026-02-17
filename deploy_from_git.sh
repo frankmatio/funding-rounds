@@ -12,7 +12,7 @@ echo "==========================================================================
 echo ""
 
 # Configuration
-GIT_REPO="YOUR_GIT_REPO_URL"  # Update this after pushing to git
+GIT_REPO="https://github.com/frankmatio/funding-rounds.git"
 DEPLOY_DIR="/opt/funding-rounds"
 APP_DIR="$DEPLOY_DIR/v2_parallel_db"
 
