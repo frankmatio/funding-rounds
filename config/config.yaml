@@ -34,38 +34,56 @@ llm_providers:
 
   providers:
     - name: gemini
+      endpoint: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+      model: "gemini-1.5-flash"
       priority: 1
       rate_limit_rpm: 15
       enabled: true
     - name: groq
+      endpoint: "https://api.groq.com/openai/v1/chat/completions"
+      model: "llama-3.1-8b-instant"
       priority: 2
       rate_limit_rpm: 30
       enabled: true
     - name: deepseek
+      endpoint: "https://api.deepseek.com/chat/completions"
+      model: "deepseek-chat"
       priority: 3
       rate_limit_rpm: 60
       enabled: true
     - name: openrouter
+      endpoint: "https://openrouter.ai/api/v1/chat/completions"
+      model: "meta-llama/llama-3.1-8b-instruct:free"
       priority: 4
       rate_limit_rpm: 20
       enabled: true
     - name: cerebras
+      endpoint: "https://api.cerebras.ai/v1/chat/completions"
+      model: "llama3.1-8b"
       priority: 5
       rate_limit_rpm: 30
       enabled: true
     - name: mistral
+      endpoint: "https://api.mistral.ai/v1/chat/completions"
+      model: "mistral-small-latest"
       priority: 6
       rate_limit_rpm: 30
       enabled: true
     - name: fireworks
+      endpoint: "https://api.fireworks.ai/inference/v1/chat/completions"
+      model: "accounts/fireworks/models/llama-v3p1-8b-instruct"
       priority: 7
       rate_limit_rpm: 30
       enabled: true
     - name: qwen
+      endpoint: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+      model: "qwen-turbo"
       priority: 8
       rate_limit_rpm: 60
       enabled: true
     - name: openrouter_2
+      endpoint: "https://openrouter.ai/api/v1/chat/completions"
+      model: "google/gemma-2-9b-it:free"
       priority: 9
       rate_limit_rpm: 20
       enabled: true
