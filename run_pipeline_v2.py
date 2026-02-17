@@ -220,6 +220,8 @@ def main():
                        help='Path to CSV file with company names')
     parser.add_argument('--workers', type=int, default=4,
                        help='Number of parallel workers (default: 4)')
+    parser.add_argument('--reset', action='store_true',
+                       help='Reset processing status and reprocess all companies (use after bug fixes)')
     args = parser.parse_args()
 
     # Load environment and configuration
@@ -280,6 +282,11 @@ def main():
         run_stage1(db_manager, companies)
         stage1_elapsed = datetime.now() - stage1_start
         logger.info(f"Stage 1 complete in {stage1_elapsed}")
+
+        # Reset processing status if requested (use after bug fixes to reprocess)
+        if args.reset:
+            logger.info("⚠  --reset flag set: resetting processing status for all companies")
+            db_manager.reset_processing_status(stages=[2, 3, 4])
 
         # Stage 2: SEC collection (parallel)
         stage2_start = datetime.now()

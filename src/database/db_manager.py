@@ -122,6 +122,28 @@ class DatabaseManager:
         status.stage4_completed_at = datetime.utcnow() if completed else None
         status.stage4_unique_rounds = unique_rounds
 
+    def reset_processing_status(self, stages: List[int] = None):
+        """Reset processing status flags so companies get reprocessed.
+        stages: list of stage numbers to reset (2, 3, 4). Defaults to all."""
+        if stages is None:
+            stages = [2, 3, 4]
+        with self.session_scope() as session:
+            records = session.query(ProcessingStatus).all()
+            for status in records:
+                if 2 in stages:
+                    status.stage2_sec_collected = False
+                    status.stage2_completed_at = None
+                    status.stage2_rounds_found = 0
+                if 3 in stages:
+                    status.stage3_search_extracted = False
+                    status.stage3_completed_at = None
+                    status.stage3_rounds_found = 0
+                if 4 in stages:
+                    status.stage4_merged = False
+                    status.stage4_completed_at = None
+                    status.stage4_unique_rounds = 0
+            logger.info(f"✓ Reset processing status for {len(records)} companies (stages {stages})")
+
     def get_companies_needing_stage(self, stage: int) -> List[Company]:
         """Get companies that haven't completed a specific stage"""
         with self.session_scope() as session:
