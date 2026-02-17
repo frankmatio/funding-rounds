@@ -260,6 +260,9 @@ class DatabaseManager:
                    snippet: Optional[str] = None, llm_provider: Optional[str] = None,
                    llm_model: Optional[str] = None, extraction_confidence: Optional[str] = None) -> Source:
         """Add a data source for a funding round"""
+        # Truncate to fit VARCHAR(500) column limits
+        if title and len(title) > 490:
+            title = title[:490] + '...'
         source = Source(
             round_id=round_id,
             source_type=source_type,

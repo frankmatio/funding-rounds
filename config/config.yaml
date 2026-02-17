@@ -34,8 +34,8 @@ llm_providers:
 
   providers:
     - name: gemini
-      endpoint: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
-      model: "gemini-1.5-flash"
+      endpoint: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent"
+      model: "gemini-1.5-flash-latest"
       priority: 1
       rate_limit_rpm: 15
       enabled: true
@@ -50,10 +50,10 @@ llm_providers:
       model: "deepseek-chat"
       priority: 3
       rate_limit_rpm: 60
-      enabled: true
+      enabled: false  # 402 Payment Required - free credits exhausted
     - name: openrouter
       endpoint: "https://openrouter.ai/api/v1/chat/completions"
-      model: "meta-llama/llama-3.1-8b-instruct:free"
+      model: "mistralai/mistral-7b-instruct:free"
       priority: 4
       rate_limit_rpm: 20
       enabled: true
@@ -65,13 +65,13 @@ llm_providers:
       enabled: true
     - name: mistral
       endpoint: "https://api.mistral.ai/v1/chat/completions"
-      model: "mistral-small-latest"
+      model: "open-mistral-7b"
       priority: 6
-      rate_limit_rpm: 30
+      rate_limit_rpm: 5  # Free tier is 1 RPM, use 5 to be safe
       enabled: true
     - name: fireworks
       endpoint: "https://api.fireworks.ai/inference/v1/chat/completions"
-      model: "accounts/fireworks/models/llama-v3p1-8b-instruct"
+      model: "accounts/fireworks/models/llama-v3p2-3b-instruct"
       priority: 7
       rate_limit_rpm: 30
       enabled: true
@@ -83,7 +83,7 @@ llm_providers:
       enabled: true
     - name: openrouter_2
       endpoint: "https://openrouter.ai/api/v1/chat/completions"
-      model: "google/gemma-2-9b-it:free"
+      model: "meta-llama/llama-3.2-3b-instruct:free"
       priority: 9
       rate_limit_rpm: 20
       enabled: true
